@@ -83,15 +83,16 @@ async fn run_session(
         }
     }
 
-    // One cached TCP probe (30s TTL) — do not hammer rental backends.
-    if !state.health.is_healthy(backend).await {
-        warn!(%peer, %backend, "backend health cache says down; abort session");
-        state.metrics.disconnects.fetch_add(1, Ordering::Relaxed);
-        state.metrics.active.fetch_sub(1, Ordering::Relaxed);
-        anyhow::bail!("backend unhealthy: {backend}");
-    }
-
-    let mut outbound = TcpStream::connect(backend).await?;
+    // Health already checked inside resolve_route (with one failover attempt).
+    let mut outbound = match TcpStream::connect(backend).await {
+        Ok(s) => s,
+        Err(err) => {
+            warn!(%peer, %backend, error = %err, "connect failed after health check");
+            state.metrics.disconnects.fetch_add(1, Ordering::Relaxed);
+            state.metrics.active.fetch_sub(1, Ordering::Relaxed);
+            return Err(err.into());
+        }
+    };
     if state.config.tcp_nodelay {
         let _ = outbound.set_nodelay(true);
     }
