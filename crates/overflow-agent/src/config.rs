@@ -34,6 +34,15 @@ pub struct AgentConfig {
     pub peers: Vec<Peer>,
     #[serde(default)]
     pub federation_directory_url: Option<String>,
+    /// Optional DATUM GW door registry (TOML with [doors.ID] host/port/api).
+    #[serde(default)]
+    pub gw_doors_path: Option<PathBuf>,
+    /// Admin password for GW `/clients.json` + `/cmd` (or set via env below).
+    #[serde(default)]
+    pub gw_admin_password: Option<String>,
+    /// If set, read GW admin password from this env var (preferred over plaintext).
+    #[serde(default)]
+    pub gw_admin_password_env: Option<String>,
 }
 
 fn default_authorize_wait_ms() -> u64 {
@@ -60,5 +69,16 @@ impl AgentConfig {
         let raw = std::fs::read_to_string(path)
             .with_context(|| format!("read {}", path.display()))?;
         toml::from_str(&raw).context("parse agent.toml")
+    }
+
+    pub fn gw_password(&self) -> Option<String> {
+        if let Some(env_name) = &self.gw_admin_password_env {
+            if let Ok(v) = std::env::var(env_name) {
+                if !v.is_empty() {
+                    return Some(v);
+                }
+            }
+        }
+        self.gw_admin_password.clone()
     }
 }

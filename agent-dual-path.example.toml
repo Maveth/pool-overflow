@@ -18,6 +18,10 @@ tcp_nodelay = true
 leases_path = "leases.json"
 addresses_path = "addresses.json"
 
+# Optional DATUM GW migrate (must be root keys, before [[peers]])
+# gw_doors_path = "doors.toml"
+# gw_admin_password_env = "OVERFLOW_GW_ADMIN_PASSWORD"
+
 [criteria]
 max_fee_bps = 200
 enter_network_share_pct = 15.0

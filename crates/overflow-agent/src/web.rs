@@ -1,12 +1,13 @@
 //! Light status HTTP for the local agent.
 
+use crate::gw::{self, MatchMode};
 use crate::state::AppState;
 use crate::stratum::payout_address_from_username;
 use axum::extract::{Query, State};
+use axum::http::StatusCode;
 use axum::response::{Html, IntoResponse};
 use axum::routing::{get, post};
 use axum::{Json, Router};
-// Json used for extract + response
 use chrono::Utc;
 use overflow_core::AddressClass;
 use serde::Deserialize;
@@ -19,6 +20,7 @@ pub fn router(state: Arc<AppState>) -> Router {
         .route("/api/lease", get(api_lease))
         .route("/api/address/class", get(api_class))
         .route("/api/address/pin", post(api_pin))
+        .route("/api/gw/migrate", post(api_gw_migrate))
         .with_state(state)
 }
 
@@ -70,7 +72,8 @@ async fn api_status(State(state): State<Arc<AppState>>) -> impl IntoResponse {
         "active_leases": active,
         "metrics": state.metrics.snapshot(),
         "federation_directory_url": state.config.federation_directory_url,
-        "datum_note": "DATUM 0xA4 migrate/return-home is Stage 2 when gateways follow it.",
+        "gw_doors_path": state.config.gw_doors_path.as_ref().map(|p| p.display().to_string()),
+        "gw_migrate": "POST /api/gw/migrate {from,to,identity,match,dry_run}",
     }))
 }
 
@@ -134,4 +137,89 @@ async fn api_pin(
         "class": AddressClass::Pinned,
         "pinned": body.pinned
     }))
+}
+
+#[derive(Debug, Deserialize)]
+struct GwMigrateBody {
+    /// Source door id from doors.toml (e.g. "M").
+    from: String,
+    /// Dest door id (required unless dry_run).
+    #[serde(default)]
+    to: Option<String>,
+    /// Payout address or address.worker.
+    identity: String,
+    /// "exact" or "address" (address.* / all workers on payout).
+    #[serde(default = "default_match_address")]
+    #[serde(rename = "match")]
+    match_mode: String,
+    #[serde(default)]
+    dry_run: bool,
+}
+
+fn default_match_address() -> String {
+    "address".into()
+}
+
+async fn api_gw_migrate(
+    State(state): State<Arc<AppState>>,
+    Json(body): Json<GwMigrateBody>,
+) -> impl IntoResponse {
+    let Some(doors_path) = state.config.gw_doors_path.as_ref() else {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({
+                "ok": false,
+                "error": "gw_doors_path not configured in agent.toml"
+            })),
+        )
+            .into_response();
+    };
+    let Some(password) = state.config.gw_password() else {
+        return (
+            StatusCode::BAD_REQUEST,
+            Json(serde_json::json!({
+                "ok": false,
+                "error": "gw admin password not configured (gw_admin_password_env / gw_admin_password)"
+            })),
+        )
+            .into_response();
+    };
+    let mode = match MatchMode::parse(&body.match_mode) {
+        Ok(m) => m,
+        Err(err) => {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({ "ok": false, "error": err.to_string() })),
+            )
+                .into_response();
+        }
+    };
+    let doors = match gw::load_doors(doors_path) {
+        Ok(d) => d,
+        Err(err) => {
+            return (
+                StatusCode::BAD_REQUEST,
+                Json(serde_json::json!({ "ok": false, "error": err.to_string() })),
+            )
+                .into_response();
+        }
+    };
+    match gw::migrate_by_address(
+        &doors,
+        &body.from,
+        body.to.as_deref(),
+        &body.identity,
+        mode,
+        &password,
+        body.dry_run,
+    )
+    .await
+    {
+        Ok(report) => Json(serde_json::json!({ "ok": true, "report": report })).into_response(),
+        Err(err) => (
+            StatusCode::BAD_GATEWAY,
+            Json(serde_json::json!({ "ok": false, "error": err.to_string() })),
+        )
+            .into_response(),
+    }
 }

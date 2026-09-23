@@ -1,11 +1,12 @@
-//! Pool-local overflow agent — Stage 1 SV1 valve.
+//! Pool-local overflow agent — Stage 1 SV1 valve + optional GW migrate hooks.
 //!
-//! Works with local peers only. Optional federation-directory URL for later.
-//! DATUM 0xA4 migrate is documented, not implemented here yet.
+//! SV1 path: authorize-peek + dual-path pump.
+//! GW path (optional): list/migrate via DATUM Gateway admin APIs by payout address.
 
 mod addresses;
 mod config;
 mod decide;
+mod gw;
 mod health;
 mod leases;
 mod metrics;

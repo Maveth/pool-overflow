@@ -1,61 +1,56 @@
-# Migrate by payout address (revised flow)
+# Migrate by payout address
 
-## Problem
+Federation/ops side of per-client move. The Gateway APIs themselves are
+documented upstream-style in:
 
-All miners reach GWs through **HAP or socat**. On the gateway,
-`rem_host` is almost always `127.0.0.1` / `::ffff:127.0.0.1`. It cannot
-identify a miner or supply a `client.reconnect` host.
+https://github.com/Maveth/datum_gateway-migrate-pr/blob/add-client-migrate/doc/client_migrate.md
 
-## Revised control flow
+## Flow
 
 ```
 pick source GW
   → GET /clients.json
   → match sessions by payout identity
-  → for each tid/cid: POST migrate_client → door[dest].host:port
+  → POST migrate_client → door[dest].host:port
 ```
 
-| Concept | Source of truth |
-|---|---|
-| Who to move | **payout address** (username from authorize) |
-| Session scalpel | `tid` / `cid` on that GW only |
-| Reconnect target | **door registry** (`doors.toml`), not `rem_host` |
+| | Source of truth |
+|--|--|
+| Who | payout address (Stratum username; `address.*` = all workers) |
+| Session | `tid` / `cid` on that GW |
+| Where | door registry (`doors.toml`) — not `rem_host` |
 
 ## Match modes
 
-| Mode | Meaning |
-|---|---|
-| `exact` | full `address.worker` (lab / single worker) |
-| `address` / `prefix` | **`address.*`** — every worker on that payout |
+- `exact` — full `address.worker`
+- `address` — every worker on that payout
 
-**Later product:** rate math, sticky lease (~24h), and overflow decisions key on
-**normalized address** (strip `.worker`). Worker is display / ops only.
+## Tools
 
-## Lab doors (Maveth twins)
-
-| Id | Internal stratum | API | Advertised door |
-|---|---|---|---|
-| M | 23449 | 7166 | 29509 |
-| N | 23451 | 7171 | 29510 |
-
-Image: `datum_gateway:convoy-pr10-migrate` (PR10 lineage + `clients.json` /
-`migrate_client`). **Not** deployed on rental J.
-
-## Tooling
+**CLI**
 
 ```bash
-# list matches only
 python3 scripts/migrate_by_address.py \
-  --doors doors.example.toml --from N \
-  --identity 'bc1q….Maveth' --match exact \
-  --password-from-gw-config /path/to/n/config.json \
-  --dry-run
-
-# bounce N → M by address (all workers)
-python3 scripts/migrate_by_address.py \
-  --doors doors.toml --from N --to M \
+  --doors doors.toml --from M --to N \
   --identity bc1q… --match address \
-  --password-from-gw-config /path/to/n/config.json
+  --password-from-gw-config /path/to/gw/config.json
 ```
 
-See also `docs/GATEWAY_SPIKE.md`, `docs/LUKE_GW_LAB.md`.
+**overflow-agent** (optional)
+
+```toml
+gw_doors_path = "doors.toml"
+gw_admin_password_env = "OVERFLOW_GW_ADMIN_PASSWORD"
+```
+
+```http
+POST /api/gw/migrate
+{"from":"M","to":"N","identity":"bc1q…","match":"address","dry_run":false}
+```
+
+## Lab doors (MaVeTh)
+
+| Id | Stratum | API | Door |
+|----|---------|-----|------|
+| M | 23449 | 7166 | 29509 |
+| N | 23451 | 7171 | 29510 |

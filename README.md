@@ -46,7 +46,9 @@ cargo build --workspace --release -j 1
 - [x] Spike: GW `/clients` enum (read-only) + `0xA4` = whole-uplink not per-client  
 - [x] Lab GW `clients.json` + `migrate_client` (M/N twins; not on rental J)  
 - [x] Address-first migrate helper + door registry (`scripts/migrate_by_address.py`)  
-- [ ] Agent calls GW migrate by payout address (wire overflow-agent → doors)  
+- [x] Shareable GW feature: [datum_gateway-migrate-pr#1](https://github.com/Maveth/datum_gateway-migrate-pr/pull/1)  
+- [x] Agent `POST /api/gw/migrate` (doors + payout address)  
+- [ ] Auto policy: decide overflow then call GW migrate (not only SV1 pump)  
 - [ ] Directory pull of live peer rates  
 
 ### Lab ports (do not use HAP)
