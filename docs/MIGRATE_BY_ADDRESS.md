@@ -58,4 +58,16 @@ python3 scripts/migrate_by_address.py \
   --password-from-gw-config /path/to/n/config.json
 ```
 
+## Frozen GW upgrade (do not grow federation into the GW)
+
+Reviewable per-client migrate lives in:
+
+- Repo: [Maveth/datum_gateway-migrate](https://github.com/Maveth/datum_gateway-migrate)  
+- Branch: **`client-migrate`**  
+- Docs: `doc/CLIENT_MIGRATE.md`  
+- Patch: `patches/0001-client-migrate.patch` (~4 source files)
+
+That fork is **list + move only**. It does **not** change upstream `0xA4`.
+Policy, doors, address.*, and agent logic stay in **this** repo (`pool-overflow`).
+
 See also `docs/GATEWAY_SPIKE.md`, `docs/LUKE_GW_LAB.md`.
