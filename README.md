@@ -46,7 +46,6 @@ cargo build --workspace --release -j 1
 - [x] Spike: GW `/clients` enum (read-only) + `0xA4` = whole-uplink not per-client  
 - [x] Lab GW `clients.json` + `migrate_client` (M/N twins; not on rental J)  
 - [x] Address-first migrate helper + door registry (`scripts/migrate_by_address.py`)  
-- [x] Frozen GW upgrade fork: [datum_gateway-migrate `client-migrate`](https://github.com/Maveth/datum_gateway-migrate/tree/client-migrate) (not `0xA4`)  
 - [ ] Agent calls GW migrate by payout address (wire overflow-agent → doors)  
 - [ ] Directory pull of live peer rates  
 
