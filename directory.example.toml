@@ -1,0 +1,17 @@
+[criteria]
+max_fee_bps = 200
+enter_network_share_pct = 15.0
+exit_network_share_pct = 12.0
+lease_hours = 24
+overflow_new_addresses = true
+
+[[peers]]
+id = "riptide"
+name = "Riptide"
+sv1_backend = "sv1.example:23334"
+fee_bps = 100
+self_reported_hs = 0.0
+network_share_pct = 0.0
+opt_in = true
+tag_confidence = 0.9
+notes = "Example — fill real SV1 and stats URL later"

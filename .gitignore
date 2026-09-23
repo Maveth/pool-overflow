@@ -1,0 +1,6 @@
+/target
+/.cargo-home
+/agent.toml
+/directory.toml
+*.log
+.DS_Store

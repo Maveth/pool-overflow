@@ -1,0 +1,24 @@
+# Pool-local overflow agent — works with NO federation directory.
+listen_sv1 = "0.0.0.0:29790"
+local_sv1_backend = "127.0.0.1:23446"
+local_peer_id = "riptide-lab"
+
+[criteria]
+max_fee_bps = 200
+enter_network_share_pct = 15.0
+exit_network_share_pct = 12.0
+lease_hours = 24
+overflow_new_addresses = true
+
+# federation_directory_url = "http://127.0.0.1:29880"
+
+[[peers]]
+id = "peer-a"
+name = "Example peer A"
+sv1_backend = "127.0.0.1:23446"
+fee_bps = 100
+self_reported_hs = 0.0
+network_share_pct = 5.0
+opt_in = true
+tag_confidence = 0.8
+notes = "Lab sink — replace with real peer SV1"
