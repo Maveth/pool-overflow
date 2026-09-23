@@ -54,19 +54,19 @@ Separate small service / crate:
 
 Agents that never talk to the directory still work.
 
-## DATUM `0xA4` GWMigration (allude → implement when ready)
+## DATUM `0xA4` GWMigration (spike 2026-09-23)
 
-Luke’s Prime→GW **migration** message (ABW set): roughly *“mine on this other
-DATUM for a while / return home.”* Originally for maintenance; same mechanism
-for per-session overflow **without** ASIC reconnect games.
+See `docs/GATEWAY_SPIKE.md`. Luke’s **`0xA4`** (NAS `datum-luke-tmp`) redirects the
+gateway’s **whole DATUM uplink** (host/port/pubkey) for a deadline, then
+return-home — **not** per stratum client.
 
 | Path | Mechanism |
 |---|---|
-| SV1 ASIC | Authorize-peek + line-pump (portable) |
-| DATUM GW | Prefer **`0xA4`** session migrate when GW follows it |
+| Per SV1 session | Authorize-peek + line-pump **or** future GW `migrate_client` |
+| Whole-GW DATUM home | **`0xA4`** uplink migrate (when enabled) |
 
-ratum today often **logs `0xA4` without following** — so Stage 1 ships SV1 pump;
-DATUM migrate is Stage 2 behind a clear trait/`todo`, not a fake.
+Stock GW admin: `/clients` HTML + **`kill_client` only**. Read-only enum:
+`scripts/gw_clients_enum.py`. Agent decides; GW/Prime execute when APIs exist.
 
 ## Address “newness”
 

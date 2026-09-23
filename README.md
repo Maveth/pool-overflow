@@ -43,7 +43,8 @@ cargo build --workspace --release -j 1
 - [x] `overflow-sink` lab destination for dual-path tests  
 - [ ] Auto house-share meter (still operator-supplied pct)  
 - [ ] Failover rebind when backend goes unhealthy mid-lease  
-- [ ] DATUM `0xA4` follow (gateway-side)  
+- [x] Spike: GW `/clients` enum (read-only) + `0xA4` = whole-uplink not per-client  
+- [ ] GW `migrate_client` (upgrade) / honor local migrate ctl  
 - [ ] Directory pull of live peer rates  
 
 ### Lab ports (do not use HAP)
