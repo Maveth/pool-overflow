@@ -6,6 +6,7 @@
 mod addresses;
 mod config;
 mod decide;
+mod health;
 mod leases;
 mod metrics;
 mod session;

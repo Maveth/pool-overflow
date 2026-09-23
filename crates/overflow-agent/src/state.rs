@@ -2,6 +2,7 @@
 
 use crate::addresses::AddressBook;
 use crate::config::AgentConfig;
+use crate::health::HealthCache;
 use crate::leases::LeaseStore;
 use crate::metrics::Metrics;
 use chrono::Utc;
@@ -15,6 +16,7 @@ pub struct AppState {
     pub leases: RwLock<LeaseStore>,
     pub addresses: RwLock<AddressBook>,
     pub metrics: Metrics,
+    pub health: HealthCache,
 }
 
 impl AppState {
@@ -24,6 +26,8 @@ impl AppState {
             leases: RwLock::new(leases),
             addresses: RwLock::new(addresses),
             metrics: Metrics::default(),
+            // 30s TTL — gentle on live backends like rental GW J
+            health: HealthCache::new(30),
         })
     }
 

@@ -55,9 +55,7 @@ async fn run_session(
         Some(ref user) => {
             state.metrics.authorizes.fetch_add(1, Ordering::Relaxed);
             if username_looks_payable(user) {
-                let addr = payout_address_from_username(user);
-                state.note_seen(&addr).await;
-                addr
+                payout_address_from_username(user)
             } else {
                 format!("ip:{}", peer.ip())
             }
@@ -65,7 +63,11 @@ async fn run_session(
         None => format!("ip:{}", peer.ip()),
     };
 
+    // Classify before note_seen so first-seen addresses stay New for this decision.
     let (peer_id, backend, decision) = state.resolve_route(&sticky).await?;
+    if sticky.starts_with("bc1") || sticky.starts_with('1') || sticky.starts_with('3') {
+        state.note_seen(&sticky).await;
+    }
     match &decision {
         SessionDecision::KeepLocal { reason } => {
             state.metrics.keep_local.fetch_add(1, Ordering::Relaxed);
@@ -79,6 +81,14 @@ async fn run_session(
             state.metrics.overflowed.fetch_add(1, Ordering::Relaxed);
             info!(%peer, %sticky, %peer_id, %backend, %reason, "overflow");
         }
+    }
+
+    // One cached TCP probe (30s TTL) — do not hammer rental backends.
+    if !state.health.is_healthy(backend).await {
+        warn!(%peer, %backend, "backend health cache says down; abort session");
+        state.metrics.disconnects.fetch_add(1, Ordering::Relaxed);
+        state.metrics.active.fetch_sub(1, Ordering::Relaxed);
+        anyhow::bail!("backend unhealthy: {backend}");
     }
 
     let mut outbound = TcpStream::connect(backend).await?;

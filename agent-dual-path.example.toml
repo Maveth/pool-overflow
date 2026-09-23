@@ -1,0 +1,37 @@
+# Dual-path lab config:
+# - keep-local → GW J internal :23446 (real door; be gentle — rentals may be live)
+# - overflow   → overflow-sink :29792 (fake pool; safe to hammer)
+#
+# Set house_sv1_network_share_pct >= 15 to force overflow for NEW addresses.
+
+listen_sv1 = "0.0.0.0:29790"
+listen_http = "0.0.0.0:29791"
+local_sv1_backend = "127.0.0.1:23446"
+local_peer_id = "riptide-lab"
+
+# 0 = keep local for new test sessions; 20 = exercise overflow to sink
+house_sv1_network_share_pct = 20.0
+
+authorize_wait_ms = 800
+max_forward_connections = 32
+tcp_nodelay = true
+leases_path = "leases.json"
+addresses_path = "addresses.json"
+
+[criteria]
+max_fee_bps = 200
+enter_network_share_pct = 15.0
+exit_network_share_pct = 12.0
+lease_hours = 24
+overflow_new_addresses = true
+
+[[peers]]
+id = "lab-sink"
+name = "Lab overflow-sink"
+sv1_backend = "127.0.0.1:29792"
+fee_bps = 100
+self_reported_hs = 0.0
+network_share_pct = 1.0
+opt_in = true
+tag_confidence = 0.5
+notes = "Safe sink — does not touch HAP or rental sessions on J"

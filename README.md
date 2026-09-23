@@ -39,8 +39,10 @@ cargo build --workspace --release -j 1
 - [x] Agent SV1 authorize-peek + opaque pump + sticky leases  
 - [x] Address class: pinned / known / new (+ pin API)  
 - [x] Agent status HTTP (`:29791` in example)  
+- [x] Light TCP health cache (30s TTL — gentle on live J)  
+- [x] `overflow-sink` lab destination for dual-path tests  
 - [ ] Auto house-share meter (still operator-supplied pct)  
-- [ ] Destination health-check failover  
+- [ ] Failover rebind when backend goes unhealthy mid-lease  
 - [ ] DATUM `0xA4` follow (gateway-side)  
 - [ ] Directory pull of live peer rates  
 
@@ -50,5 +52,8 @@ cargo build --workspace --release -j 1
 |---|---|
 | overflow-agent SV1 | `0.0.0.0:29790` |
 | overflow-agent HTTP | `0.0.0.0:29791` |
+| overflow-sink (fake pool) | `0.0.0.0:29792` |
 | federation-directory | `0.0.0.0:29880` |
-| Lab backend | `127.0.0.1:23446` (GW J internal) |
+| Keep-local backend | `127.0.0.1:23446` (GW J internal — rentals may be live; be gentle) |
+
+Dual-path lab: `agent-dual-path.example.toml` (house share 20% → overflow to sink).

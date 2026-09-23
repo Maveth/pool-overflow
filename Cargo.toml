@@ -4,6 +4,7 @@ members = [
     "crates/overflow-core",
     "crates/overflow-agent",
     "crates/federation-directory",
+    "crates/overflow-sink",
 ]
 
 [workspace.package]
