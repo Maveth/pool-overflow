@@ -1,17 +1,14 @@
-//! Session keep-vs-overflow policy (no I/O).
+//! Session keep-vs-overflow policy (pure).
 
 use crate::config::AgentConfig;
 use overflow_core::{AddressClass, Peer, SessionDecision};
 
-/// Pure decision: given house load + address class, keep or overflow.
 pub fn decide_session(
     cfg: &AgentConfig,
-    payout_address: &str,
+    _payout_address: &str,
     class: AddressClass,
     house_sv1_network_share_pct: f64,
 ) -> SessionDecision {
-    let _ = payout_address;
-
     if matches!(class, AddressClass::Pinned) {
         return SessionDecision::KeepLocal {
             reason: "pinned address".into(),
@@ -27,14 +24,9 @@ pub fn decide_session(
         };
     }
 
-    if matches!(class, AddressClass::Known) && !cfg.criteria.overflow_new_addresses {
-        // When only-new overflow is preferred, known stays unless forced later.
-    }
-
     if matches!(class, AddressClass::Known) && cfg.criteria.overflow_new_addresses {
-        // Prefer overflowing New; Known stays unless we add a stronger pressure knob later.
         return SessionDecision::KeepLocal {
-            reason: "known address; prefer overflow new only".into(),
+            reason: "known address; overflow prefers new".into(),
         };
     }
 
@@ -48,7 +40,7 @@ pub fn decide_session(
             ),
         },
         None => SessionDecision::KeepLocal {
-            reason: "over enter threshold but no eligible peer".into(),
+            reason: "over threshold but no eligible peer".into(),
         },
     }
 }

@@ -1,7 +1,17 @@
 # Pool-local overflow agent — works with NO federation directory.
 listen_sv1 = "0.0.0.0:29790"
+listen_http = "0.0.0.0:29791"
 local_sv1_backend = "127.0.0.1:23446"
 local_peer_id = "riptide-lab"
+
+# Operator-supplied soft meter (later: compute from shares vs network).
+house_sv1_network_share_pct = 0.0
+
+authorize_wait_ms = 800
+max_forward_connections = 64
+tcp_nodelay = true
+leases_path = "leases.json"
+addresses_path = "addresses.json"
 
 [criteria]
 max_fee_bps = 200
@@ -13,12 +23,12 @@ overflow_new_addresses = true
 # federation_directory_url = "http://127.0.0.1:29880"
 
 [[peers]]
-id = "peer-a"
-name = "Example peer A"
+id = "peer-lab"
+name = "Lab peer sink"
 sv1_backend = "127.0.0.1:23446"
 fee_bps = 100
 self_reported_hs = 0.0
 network_share_pct = 5.0
 opt_in = true
 tag_confidence = 0.8
-notes = "Lab sink — replace with real peer SV1"
+notes = "Lab — same J backend for pipe smoke; replace with real peer later"

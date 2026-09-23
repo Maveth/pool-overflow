@@ -35,8 +35,20 @@ cargo build --workspace --release -j 1
 ## Status
 
 - [x] Design: pool-local first, federation optional  
-- [x] Core types + agent/directory stubs  
-- [ ] Agent SV1 peek+pump (port from `sv1-federation`)  
-- [ ] Known-address heuristic hooks  
+- [x] Core types + directory HTTP stub  
+- [x] Agent SV1 authorize-peek + opaque pump + sticky leases  
+- [x] Address class: pinned / known / new (+ pin API)  
+- [x] Agent status HTTP (`:29791` in example)  
+- [ ] Auto house-share meter (still operator-supplied pct)  
+- [ ] Destination health-check failover  
 - [ ] DATUM `0xA4` follow (gateway-side)  
-- [ ] Directory ingest of Riptide-shaped `PoolReport`  
+- [ ] Directory pull of live peer rates  
+
+### Lab ports (do not use HAP)
+
+| Service | Port |
+|---|---|
+| overflow-agent SV1 | `0.0.0.0:29790` |
+| overflow-agent HTTP | `0.0.0.0:29791` |
+| federation-directory | `0.0.0.0:29880` |
+| Lab backend | `127.0.0.1:23446` (GW J internal) |
