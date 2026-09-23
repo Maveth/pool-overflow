@@ -9,9 +9,17 @@
 | `/mnt/Alexandria/local/bip110-lab/datum-luke-tmp/` | Upstream luke + migrate patches; needs ABW lab bypass (Prime configure dialect mismatch) |
 | `/mnt/Alexandria/local/bip110-lab/convoy-lab-migrate/` | **Preferred lab** — copy of convoy-pr10-cbreuse-renotify + migrate patches (same lineage as prod GW image) |
 
-Lab image tags only: `datum-luke-lab:migrate`, `datum-convoy-lab:migrate`.  
-Lab container names only: `datum-luke-lab-migrate`, `datum-convoy-lab-migrate`.  
-Lab ports: stratum **23499**, API **7199**. Sink: **29792**.
+Lab image tags: `datum-luke-lab:migrate`, `datum-convoy-lab:migrate`,
+`datum_gateway:convoy-pr10-migrate` (M/N).
+
+| Deploy | Stratum | API | Door |
+|---|---|---|---|
+| lab container | **23499** | **7199** | lab only |
+| **M** `bip110-datum-sv1-m` | **23449** | **7166** | **29509** |
+| **N** `bip110-datum-sv1-n` | **23451** | **7171** | **29510** |
+
+Select/migrate by **payout address** + door registry — see `docs/MIGRATE_BY_ADDRESS.md`.  
+Sink (fake peer): **29792**.
 
 ## APIs added (lab)
 

@@ -44,7 +44,9 @@ cargo build --workspace --release -j 1
 - [ ] Auto house-share meter (still operator-supplied pct)  
 - [ ] Failover rebind when backend goes unhealthy mid-lease  
 - [x] Spike: GW `/clients` enum (read-only) + `0xA4` = whole-uplink not per-client  
-- [ ] GW `migrate_client` (upgrade) / honor local migrate ctl  
+- [x] Lab GW `clients.json` + `migrate_client` (M/N twins; not on rental J)  
+- [x] Address-first migrate helper + door registry (`scripts/migrate_by_address.py`)  
+- [ ] Agent calls GW migrate by payout address (wire overflow-agent → doors)  
 - [ ] Directory pull of live peer rates  
 
 ### Lab ports (do not use HAP)

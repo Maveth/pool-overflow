@@ -1,0 +1,27 @@
+# Advertised SV1 doors for client.reconnect (NOT the client's rem_host).
+# rem_host is useless behind HAP/socat (always looks like 127.0.0.1).
+#
+# host = what the ASIC can reach (LAN IP, public IP, or DNS name).
+# port = public/socat/HAP door in front of that GW.
+
+[doors.M]
+host = "192.168.0.143"
+port = 29509
+api = "http://127.0.0.1:7166"
+stratum_internal = 23449
+note = "Maveth migrate GW; socat/HAP door"
+
+[doors.N]
+host = "192.168.0.143"
+port = 29510
+api = "http://127.0.0.1:7171"
+stratum_internal = 23451
+note = "Maveth twin migrate GW; socat door"
+
+# Optional lab
+[doors.lab]
+host = "127.0.0.1"
+port = 23499
+api = "http://127.0.0.1:7199"
+stratum_internal = 23499
+note = "lab convoy container — localhost-only smoke"

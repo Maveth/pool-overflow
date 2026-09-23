@@ -45,6 +45,9 @@ of 3 to another pool.”
   on `datum-convoy-lab-migrate` (`:23499` / `:7199` → sink `:29792`).
 - Preferred lab tree: NAS `convoy-lab-migrate` (convoy-pr10 lineage; Prime configure OK).
 - luke-tmp also smoked earlier but needs ABW/local-GBT bypass vs Prime dialect.
+- **M / N twins** (migrate image): M `:23449`/API `:7166`/door `:29509`; N `:23451`/API `:7171`/door `:29510`.
+- **Revised select flow:** match by **payout address** (not `rem_host`); reconnect via **door registry**.
+  See `docs/MIGRATE_BY_ADDRESS.md` + `scripts/migrate_by_address.py` + `doors.example.toml`.
 - **Do not** deploy over `bip110-datum-sv1-j` while rentals are live.
 
 See `docs/LUKE_GW_LAB.md`.
