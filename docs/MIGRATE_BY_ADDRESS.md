@@ -63,7 +63,7 @@ python3 scripts/migrate_by_address.py \
 Reviewable per-client migrate lives in:
 
 - Repo: [Maveth/datum_gateway-migrate](https://github.com/Maveth/datum_gateway-migrate)  
-- Branch: **`client-migrate`** (based on [`CONVOYMining/datum_gateway`](https://github.com/CONVOYMining/datum_gateway) Blake2b `master`)  
+- Branch: **`client-migrate`**  
 - Docs: `doc/CLIENT_MIGRATE.md`  
 - Patch: `patches/0001-client-migrate.patch` (~4 source files)
 
