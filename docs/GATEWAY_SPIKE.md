@@ -35,8 +35,16 @@ of 3 to another pool.”
 ## Recommended gateway upgrade (pool subcomponent later)
 
 1. `GET /clients.json` — tid, cid, unique_id, connect_tsms, username, hashrate  
-2. `POST /cmd` `{cmd: migrate_client, tid, cid, dest_host, dest_port, ttl_secs}`  
-   — true move, not kill  
+2. `POST /cmd` `{cmd: migrate_client, tid, cid, host, port, password}`  
+   — reconnect hint + kill (Stage-1); true stay-connected move later  
 3. Keep `0xA4` for uplink failover / temporary peer Prime  
 
-Until (2) exists: SV1 path = authorize-peek + pump; DATUM path = whole-GW `0xA4` only.
+## Lab status (2026-09-23)
+
+- **Done on lab GW** (not on rental J): `/clients.json` + `migrate_client` smoked PASS
+  on `datum-convoy-lab-migrate` (`:23499` / `:7199` → sink `:29792`).
+- Preferred lab tree: NAS `convoy-lab-migrate` (convoy-pr10 lineage; Prime configure OK).
+- luke-tmp also smoked earlier but needs ABW/local-GBT bypass vs Prime dialect.
+- **Do not** deploy over `bip110-datum-sv1-j` while rentals are live.
+
+See `docs/LUKE_GW_LAB.md`.
